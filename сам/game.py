@@ -17,36 +17,38 @@ def draw_back():
 
 class Tgg:
 
-    def __init__(self):
-        pass
+    def __init__(self, x, y):
+        x = 502  
+        y = 374
+        self.x = x
+        self.y = y
+        
 
     def draw(self, screen):
         '''Рисует модельку gg по координатам x, y'''
-        global x; global y
-        gg = pg.Rect(x, y, 20, 20) 
+        gg = pg.Rect(self.x, self.y, 20, 20) 
         pg.draw.rect(screen, color_gg, gg, 0)
 
 
     def moving(self):
         '''Описывает движение игрока (gg)'''
-        global x; global y
         pressed = pg.key.get_pressed() 
         if pressed[pg.K_w]:  
-            if y >= 17:    # ограничение для того, чтобы персонаж не выходил за рамки поля
-                y -= 5 
+            if self.y >= 17:    # ограничение для того, чтобы персонаж не выходил за рамки поля
+                self.y -= 5 
         if pressed[pg.K_s]:  
-            if y <= 731: 
-                y += 5 
+            if self.y <= 731: 
+                self.y += 5 
         if pressed[pg.K_a]:  
-            if x >= 18:     
-                x -= 5 
+            if self.x >= 18:     
+                self.x -= 5 
         if pressed[pg.K_d]: 
-            if x <= 986:  
-                x += 5
-        return x, y
+            if self.x <= 986:  
+                self.x += 5
+        return self.x, self.y
 
 
-class Enemy:
+class TEnemy:
 
     def __init__(self):
         pass
@@ -82,10 +84,8 @@ class TBullet:
         '''Описание сценария "enemy is dead"'''
         pass
 
-
-x = 502  
-y = 374 
-color_gg = (255, 0, 0)
+ 
+color_gg = (0, 0, 255)
 screen = pg.display.set_mode((1024, 768)) 
 clock = pg.time.Clock() 
 
@@ -93,15 +93,14 @@ clock = pg.time.Clock()
 def main():
     '''Запускает основной цикл программы'''
     finish = False
-    Gg = Tgg()
+    Gg = Tgg(502, 374)
     while not finish: 
         for event in pg.event.get(): 
             if event.type == pg.QUIT: 
                 finish = True
         
-        global x; global y
         draw_back()
-        x, y = Gg.moving()
+        Gg.moving()
         Gg.draw(screen)
         pg.display.flip() 
         clock.tick(30)

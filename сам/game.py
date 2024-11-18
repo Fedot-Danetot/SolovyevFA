@@ -21,6 +21,7 @@ class Player:
         self.color_player = (0, 0, 255)
         self.player_model = pg.Rect(502, 374, 20, 20) # моделька игрока - пока квадрат
         self.speed = 6 # скорость игрока
+        self.current_player = [502, 374]
 
     def moving(self):
         '''Отвечает за передвижение модели игрока'''
@@ -43,6 +44,7 @@ class Player:
 
         self.player_model.move_ip(move_x, move_y)
         pg.draw.rect(screen, self.color_player, self.player_model, 0)
+        self.current_player = self.player_model.center
 
     def game_over(self):
         '''Реализует проигрыш'''
@@ -82,7 +84,7 @@ class Enemy:
 
     def moving(self, i):
         '''Определяет законы движения i-ого врага'''
-        direction = pg.Vector2(self.player.player_model.center) - pg.Vector2(self.enemys[i].center) # проблема в том, что вызывается начальный атрибут - противники бегут в точку спавна гг
+        direction = pg.Vector2(self.player.current_player) - pg.Vector2(self.enemys[i].center)
         if direction.length() > 0:
             direction.normalize_ip()
             self.enemys[i].move_ip(direction * self.speed)
@@ -114,6 +116,7 @@ def main():
 
         draw_back()
         player.moving()
+        enemys.player.current_player = player.current_player 
         enemys.spawn()
         enemys.moving_draw_all()
 

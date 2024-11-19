@@ -23,18 +23,18 @@ class Player:
         self.speed = 6 # скорость игрока
         self.current_player = [502, 374]
 
-    def moving(self, player_model):
+    def moving(self):
         '''Отвечает за передвижение модели игрока'''
         move_x, move_y = 0, 0
 
         event = pg.key.get_pressed()
-        if event[pg.K_a] and player_model.center[0] > 20: # ограничение движения по границе игрового поля
+        if event[pg.K_a] and self.player_model.center[0] > 20: # ограничение движения по границе игрового поля
             move_x = -self.speed
-        if event[pg.K_d] and player_model.center[0] < 1004:
+        if event[pg.K_d] and self.player_model.center[0] < 1004:
             move_x = self.speed
-        if event[pg.K_s] and player_model.center[1] < 756:
+        if event[pg.K_s] and self.player_model.center[1] < 756:
             move_y = self.speed
-        if event[pg.K_w] and player_model.center[1] > 21:
+        if event[pg.K_w] and self.player_model.center[1] > 21:
             move_y = -self.speed
         
         if move_x != 0 and move_y != 0: # вычисление диагонального вектора при нескольких нажатых клавиш
@@ -42,9 +42,9 @@ class Player:
             move_x = (move_x / length) * self.speed
             move_y = (move_y / length) * self.speed
 
-        player_model.move_ip(move_x, move_y)
-        pg.draw.rect(screen, self.color_player, player_model, 0)
-        self.current_player = player_model.center
+        self.player_model.move_ip(move_x, move_y)
+        pg.draw.rect(screen, self.color_player, self.player_model, 0)
+        self.current_player = self.player_model
 
 
 class Enemy:
@@ -79,7 +79,7 @@ class Enemy:
 
     def moving(self, i):
         '''Определяет законы движения i-ого врага'''
-        direction = pg.Vector2(self.player.current_player) - pg.Vector2(self.enemys[i].center)
+        direction = pg.Vector2(self.player.current_player.center) - pg.Vector2(self.enemys[i].center)
         if direction.length() > 0:
             direction.normalize_ip()
             self.enemys[i].move_ip(direction * self.speed)
@@ -89,19 +89,19 @@ class Enemy:
         pg.draw.rect(screen, self.color_enemy, self.enemys[i])
 
 
-    def kill_player(self, i, player_model):
+    def kill_player(self, i):
         ''''''
-        if pg.Rect.colliderect(player_model, self.enemys[i]):
+        if pg.Rect.colliderect(self.player.current_player, self.enemys[i]):
             # временно
             pg.quit()
             sys.exit()
 
-    def moving_draw_all(self, player_model):
+    def moving_draw_all(self):
         '''реализует две предыдущих функции для всех врагов'''
         for i in range(len(self.enemys)):
             Enemy.moving(self, i)
             Enemy.draw(self, i)
-            Enemy.kill_player(self, i, player_model)
+            Enemy.kill_player(self, i)
         
 
 clock = pg.time.Clock()
@@ -111,7 +111,6 @@ def main():
     draw_back()
     player = Player()
     enemys = Enemy()
-    player_model = pg.Rect(502, 374, 20, 20)
 
     while not finish:
         for event in pg.event.get():
@@ -119,10 +118,10 @@ def main():
                 finish = True
 
         draw_back()
-        player.moving(player_model)
+        player.moving()
         enemys.player.current_player = player.current_player 
         enemys.spawn()
-        enemys.moving_draw_all(player_model)
+        enemys.moving_draw_all()
         pg.display.flip()
         clock.tick(30)
 

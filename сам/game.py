@@ -46,11 +46,6 @@ class Player:
         pg.draw.rect(screen, self.color_player, self.player_model, 0)
         self.current_player = self.player_model.center
 
-    def game_over(self):
-        '''Реализует проигрыш'''
-        # TODO
-        pass
-
 
 class Enemy:
     def __init__(self):
@@ -94,12 +89,20 @@ class Enemy:
         pg.draw.rect(screen, self.color_enemy, self.enemys[i])
 
 
+    def kill_player(self, i):
+        ''''''
+        if pg.Rect.colliderect(self.player.player_model, self.enemys[i]):
+            # временно
+            pg.quit()
+            sys.exit()
+
     def moving_draw_all(self):
         '''реализует две предыдущих функции для всех врагов'''
         for i in range(len(self.enemys)):
             Enemy.moving(self, i)
             Enemy.draw(self, i)
-
+            Enemy.kill_player(self, i)
+        
 
 clock = pg.time.Clock()
 
@@ -119,8 +122,6 @@ def main():
         enemys.player.current_player = player.current_player 
         enemys.spawn()
         enemys.moving_draw_all()
-
-        player.game_over()
         pg.display.flip()
         clock.tick(30)
 
